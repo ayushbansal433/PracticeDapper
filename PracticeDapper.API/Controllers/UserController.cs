@@ -19,7 +19,6 @@ namespace PracticeDapper.API.Controllers
         {
             _unitOfWork = unitOfWork;
         }
-        // GET: api/<UserController>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
