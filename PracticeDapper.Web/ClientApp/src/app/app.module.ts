@@ -10,6 +10,11 @@ import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
 import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { UserComponent } from './modules/user-component/user.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { MatTableModule } from '@angular/material/table';
+import { SigninComponent } from './modules/user-component/signin/signin.component';
+import { TokenInterceptor } from './shared/core/interceptors/token.interceptor';
+import { AuthenticationGuard, NavigationGuard } from './shared/core/guards/authentication-guard.guard';
 
 @NgModule({
   declarations: [
@@ -17,7 +22,9 @@ import { UserComponent } from './modules/user-component/user.component';
     NavMenuComponent,
     HomeComponent,
     CounterComponent,
-    FetchDataComponent
+    FetchDataComponent,
+    UserComponent,
+    SigninComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -25,13 +32,20 @@ import { UserComponent } from './modules/user-component/user.component';
     FormsModule,
     MatTableModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent, pathMatch: 'full' },
+      { path: 'sign-in', component: SigninComponent,canActivate:[NavigationGuard]},
       { path: 'counter', component: CounterComponent },
       { path: 'fetch-data', component: FetchDataComponent },
-      { path: 'user', component: UserComponent },
-    ])
+      { path: 'user', component: UserComponent,canActivate:[AuthenticationGuard]},
+      { path: '**', component: SigninComponent,canActivate:[NavigationGuard]},
+      { path: '', component: SigninComponent,canActivate:[NavigationGuard] },
+    ]),
+    NoopAnimationsModule
   ],
-  providers: [],
+  providers: [
+    NavigationGuard,
+    AuthenticationGuard,
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
